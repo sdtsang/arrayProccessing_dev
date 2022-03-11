@@ -7,7 +7,6 @@ function [sV, N, D] = steeringVector(pos_inp,D_srcAng_inp,fc)
 % c.) fc:  "Operating frequency".  In other words, this is the
 % frequency of the wave(s) propagating into the array
 
-
 %% +++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 % Define constants and additional parameters
@@ -23,8 +22,8 @@ end
 [pos, D_srcAng,N_elem, D_src] = parseInputsSteerVec(pos_inp,D_srcAng_inp);
 
 % Declare positions of incoming sources in Az and El, [deg]
-Az = D_srcAng(:,1);
-El = D_srcAng(:,2);
+Az = D_srcAng(1,:);
+El = D_srcAng(2,:);
 
 % Assign position angles
 azang = Az;

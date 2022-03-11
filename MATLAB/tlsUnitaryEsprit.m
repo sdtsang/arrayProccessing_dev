@@ -1,21 +1,19 @@
-function [DOA_ESPRIT] = tlsUnitaryEsprit(elemPos,D_incomingAng,noiseAddl,D_incomingSNR,d_elemSpacing,subarrayOffset,rowWeighting)
+function [DOA_ESPRIT] = tlsUnitaryEsprit(R_cov,D,numElements,d_Spacing,subarrayOffset,rowWeighting)% elemPos,D_incomingAng,noiseAddl,D_incomingSNR,d_elemSpacing,subarrayOffset,rowWeighting)
 % 1.) Three Signals Arriving at HALF-wavelength-Spaced ULA
 % Assume a half-wavelength spaced uniform line array with 10 elements.
 % Three plane waves arrive from the 0°, –25°, and 30° azimuth directions.
 % Elevation angles are 0°. The noise is spatially and temporally white.
 % The SNR for each signal is 5 dB. Find the arrival angles.
 
-if nargin < 3, noiseAddl = 0; end
-if nargin < 4, D_incomingSNR = 1; end
-if nargin < 5, d_elemSpacing = 0.5; end
-if nargin < 6, subarrayOffset = 1; end
-if nargin < 7, rowWeighting = 1; end
+
+if nargin < 5, subarrayOffset = 1; end
+if nargin < 6, rowWeighting = 1; end
 
 % SNR of incoming plane wave sources
-SNR_pw = log10(D_incomingSNR./10);  %   db2pow(D_incomingSNR);
+% SNR_pw = log10(D_incomingSNR./10);  %   db2pow(D_incomingSNR);
 % ncov_in = db2pow(-10);
-ncov_in = db2pow(noiseAddl);
-[R_cov,N,D] = sensorSpatialCovarianceMatrix(elemPos,D_incomingAng,ncov_in,SNR_pw);
+%ncov_in = db2pow(noiseAddl);
+%[R_cov,N,D] = sensorSpatialCovarianceMatrix(elemPos,D_incomingAng,ncov_in,SNR_pw);
 
 % [V,D] = eig(A,B) produces a diagonal matrix D of generalized
 % eigenvalues and a full matrix V whose columns are the corresponding
@@ -49,11 +47,12 @@ if D_sumDiagEig < D
     return;
 end
 
-elSpacing = d_elemSpacing;
+elSpacing = d_Spacing;
 saSpacing = subarrayOffset;
 rweight   = rowWeighting;
 
 % Row weighting
+N = numElements; 
 Ns = N-saSpacing; %number of elements in a subarray
 ms = rweight;
 w = min(ms,Ns-ms+1);                             % Eq 9.133 in [1]
@@ -99,6 +98,6 @@ else
     ang = ang(:).';
 end
 
-    DOA_ESPRIT = ang; str_esprit = ['DOA (ESPRIT) =  ' num2str(ang)];  disp(str_esprit);
+    DOA_ESPRIT = ang; str_esprit = ['DOA (ESPRIT) =  ' num2str(DOA_ESPRIT,'%0.6f')];  disp(str_esprit);
 
 end

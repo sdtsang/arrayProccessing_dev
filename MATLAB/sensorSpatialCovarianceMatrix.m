@@ -1,11 +1,11 @@
-function [R_cov,N,D] = sensorSpatialCovarianceMatrix(elemPos,angIncoming,noiseAddl,sigCov)
+function [R_cov,N,D] = sensorSpatialCovarianceMatrix(elemPos,angIncoming,noiseAddl,sigCov,fc)
 
 if nargin < 3, noiseAddl = 0; end
 if nargin < 4, sigCov = 1; end
 
 pos_inp = elemPos; D_srcAng_inp = angIncoming;
-% fc = 12e9;  % temp value; modify later
-[sV, N, D] = steeringVector(pos_inp,D_srcAng_inp,1);
+
+[sV, N, D] = steeringVector(pos_inp,D_srcAng_inp,fc);
 
 %N_omega = noiseAddl*randn(length(elemPos));
 S_n_omega = noiseAddl*eye(length(elemPos));
@@ -19,6 +19,9 @@ S_n_omega = noiseAddl*eye(length(elemPos));
 %   other. If sigCov is an MxM matrix, then it represents the covariance
 %   matrix for all incoming signals. The default value of sigCov is 1.
 
+% sigCov needs to be an Mx M matrix to represent covariance matrix for
+% incoming signals and to extend to noncircular
+% sV and sV' are the N x M and M x N steering vectors, respectively.
 Rx = sV*sigCov*sV' + S_n_omega;
 Rx = (Rx+Rx')/2;  % ensure Hermitian
 
